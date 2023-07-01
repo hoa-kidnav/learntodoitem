@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 // import ContentEditable from 'react-contenteditable';
+import * as actions from'../../src/actions/index' 
 class TaskForm extends Component {
   constructor(props) {
     super(props);
@@ -7,34 +9,33 @@ class TaskForm extends Component {
       id:'',
       name:'',
       status:false
-    }
+     }
   }
-
-   
-  // componentDidMount(){
-  //  if (this.props.task) {
-  //   this.setState({
-  //     id:this.props.task.id,
-  //     name:this.props.task.name,
-  //     status:this.props.task.status
-  //   })
-  //   console.log(this.state);
-  //  }
-  // }
+  componentDidMount(){
+    console.log('sds');
+   if (this.props.itemEditing&& this.props.itemEditing.id!==null) {
+    this.setState({
+      id:this.props.itemEditing.id,
+      name:this.props.itemEditing.name,
+      status:this.props.itemEditing.status
+    })
+   }else{
+    this.onClear()
+   }
+  }
   componentDidUpdate(prevProps) {
-    if (prevProps.task !== this.props.task) {
-      if (this.props.task) {
+  
+
+    if (prevProps.itemEditing !== this.props.itemEditing) {
+      if (this.props.itemEditing) {
         this.setState({
-          id: this.props.task.id,
-          name: this.props.task.name,
-          status: this.props.task.status
+          id: this.props.itemEditing.id,
+          name: this.props.itemEditing.name,
+          status: this.props.itemEditing.status
         });
-      } else if(!prevProps.task) {
-        this.setState({
-          id: '',
-          name: '',
-          status: false
-        });
+       
+      } else {
+        this.onClear();
       }
     }
   }
@@ -60,22 +61,22 @@ class TaskForm extends Component {
     })
 
   }
-  onSumbit=(event)=>{
+  onSave=(event)=>{
     event.preventDefault()
-// console.log(this.state);
-
-    this.props.onSumbit(this.state)
+    this.props.onSaveTask(this.state)
     this.onClear()
     this.onCloseForm()
   }
   onClear=()=>{
     this.setState({
+  
       name:'',
       status:false
     })
   }
     render() {
       let {id} =this.state
+      if(!this.props.isDisplayForm) return null
         return (
           
             <div className="panel panel-warning">
@@ -89,7 +90,7 @@ class TaskForm extends Component {
         </div>
    
         <div className="panel-body">
-          <form onSubmit={this.onSumbit}>
+          <form onSubmit={this.onSave}>
             <div className="form-group">
               <label>Tên :</label>
               <input type="text" 
@@ -132,5 +133,23 @@ class TaskForm extends Component {
         );
     }
 }
+const mapSateToDrops=state=>{
+return {
+  isDisplayForm:state.isDisplayForm,
+  itemEditing:state.itemEditing
 
-export default TaskForm;
+}
+}
+const mapDispatchToDrops=(dispatch,props)=>{
+  return {
+    onSaveTask:(task)=>{
+      dispatch(actions.SaveTask(task))
+    },
+
+    onCloseForm:()=>{
+      dispatch(actions.closeForm())
+    }
+  
+  }
+}
+export default connect(mapSateToDrops,mapDispatchToDrops)(TaskForm);

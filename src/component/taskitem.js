@@ -1,14 +1,19 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import * as actions from'./../actions/index'
 
 class Taskitem extends Component {
   onUpdateStatus=()=>{
   this.props.onUpdateStatus(this.props.task.id)
   }
   onDelete=()=>{
-    this.props.onDelete(this.props.task.id)
+    this.props.onDeleteTask(this.props.task.id)
+    this.props.onCloseForm()
   }
-  onUpdate=()=>{
-    this.props.onUpdate(this.props.task.id)
+  onEditTask=()=>{
+    this.props.onOpenForm()
+    this.props.onEditTask(this.props.task)
+
   }
     render() {
   let {task,index}=this.props
@@ -29,7 +34,7 @@ class Taskitem extends Component {
             <td className="text-center">
               <button type="button" 
               className="btn btn-warning"
-              onClick={this.onUpdate}
+              onClick={this.onEditTask}
               >
                 <span className="fa fa-pencil mr-5" /> &nbsp;
                 Sửa
@@ -47,4 +52,28 @@ class Taskitem extends Component {
     }
 }
 
-export default Taskitem;
+const mapSateToDrops=state=>{
+  return {}
+  }
+  const mapDispatchToDrops=(dispatch,props)=>{
+    return {
+      onUpdateStatus:(id)=>{
+        dispatch(actions.onUpdateStatus(id))
+      },
+      onDeleteTask:(id)=>{
+        dispatch(actions.deleteTask(id))
+      },
+      onCloseForm:()=>{
+        dispatch(actions.closeForm())
+      }  ,  
+       onOpenForm:()=>{
+        dispatch(actions.openForm())
+      },
+      onEditTask:(task)=>{
+        dispatch(actions.editTask(task))
+      }
+    }
+    
+   
+  }
+export default connect(mapSateToDrops,mapDispatchToDrops) (Taskitem)
